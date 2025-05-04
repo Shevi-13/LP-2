@@ -1,0 +1,70 @@
+from collections import deque
+
+# Undirected graph as adjacency list
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+# Create a list of nodes sorted alphabetically
+nodes = sorted(graph.keys())
+
+# Generate adjacency matrix
+def create_adjacency_matrix(graph, nodes):
+    size = len(nodes)
+    matrix = [[0] * size for _ in range(size)]
+    index = {node: i for i, node in enumerate(nodes)}
+    
+    for node in graph:
+        for neighbor in graph[node]:
+            i, j = index[node], index[neighbor]
+            matrix[i][j] = 1
+            matrix[j][i] = 1  # undirected graph
+
+    return matrix
+
+# Display the adjacency matrix
+def print_adjacency_matrix(matrix, nodes):
+    print("\nAdjacency Matrix:")
+    print("  ", " ".join(nodes))
+    for i, row in enumerate(matrix):
+        print(nodes[i], " ".join(str(val) for val in row))
+
+# Depth First Search (DFS) - Recursive
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start, end=' ')
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+    return visited
+
+# Breadth First Search (BFS) - Iterative
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            visited.add(vertex)
+            print(vertex, end=' ')
+            for neighbor in graph[vertex]:
+                if neighbor not in visited and neighbor not in queue:
+                    queue.append(neighbor)
+    return visited
+
+# Main Execution
+adj_matrix = create_adjacency_matrix(graph, nodes)
+print_adjacency_matrix(adj_matrix, nodes)
+
+print("\nDFS Traversal:")
+dfs(graph, 'A')
+
+print("\nBFS Traversal:")
+bfs(graph, 'A')
